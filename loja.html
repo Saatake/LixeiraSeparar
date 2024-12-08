@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loja de Pontos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      margin-top: 20px;
+    }
+    .produto {
+      display: inline-block;
+      margin: 20px;
+      padding: 10px;
+      border-radius: 10px;
+      background-color: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .produto img {
+      width: 200px;
+      height: 200px;
+      border-radius: 5px;
+    }
+    .produto p {
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      cursor: pointer;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .back-button {
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Loja de Pontos</h1>
+
+  <div class="produto">
+    <img src="produto1.jpg" alt="Produto 1">
+    <p>Comprar por 30 pontos</p>
+    <button onclick="comprarProduto(30)">Comprar</button>
+  </div>
+
+  <div class="produto">
+    <img src="produto2.jpg" alt="Produto 2">
+    <p>Comprar por 80 pontos</p>
+    <button onclick="comprarProduto(80)">Comprar</button>
+  </div>
+
+  <div class="produto">
+    <img src="produto3.jpg" alt="Produto 3">
+    <p>Comprar por 120 pontos</p>
+    <button onclick="comprarProduto(120)">Comprar</button>
+  </div>
+
+  <h2>Seus pontos: <span id="pontosLoja">0</span></h2>
+
+  <button class="back-button" onclick="voltar()">Voltar para a Página Principal</button>
+
+  <!-- SDK Firebase Compatível -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <script>
+    // Configuração do Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyCFOh6xEHlS_yuC9Rp3u8hdaUmZrn-uPPA",
+      authDomain: "upx2-99a8e.firebaseapp.com",
+      databaseURL: "https://upx2-99a8e-default-rtdb.firebaseio.com",
+      projectId: "upx2-99a8e",
+      storageBucket: "upx2-99a8e.firebasestorage.app",
+      messagingSenderId: "441113316559",
+      appId: "1:441113316559:web:c26cf7fccac53abb40bbba"
+    };
+
+    // Inicializar Firebase
+    f
