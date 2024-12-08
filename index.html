@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Controle Servo Motor</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    button {
+      font-size: 20px;
+      padding: 10px 20px;
+      margin: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      background-color: #f0f0f0;
+    }
+    button:hover {
+      background-color: #ddd;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Controle Servo Motor</h1>
+  <button id="organicoButton">Orgânico</button>
+  <button id="reciclavelButton">Reciclável</button>
+
+  <script>
+    const channelID = ""2778676";
+    const apiKey = "141F5A2KJG7LR9OI"; 
+
+    // Função para enviar comando para o ThingSpeak
+    function enviarComando(comando) {
+      const url = http://api.thingspeak.com/update?api_key=${apiKey}&field1=${comando};
+
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          console.log('Comando enviado:', data);
+        })
+        .catch(error => {
+          console.error('Erro:', error);
+        });
+    }
+
+    // Configuração dos botões para enviar comandos
+    document.getElementById('organicoButton').addEventListener('click', function() {
+      enviarComando(1); // Envia "1" para indicar "Orgânico"
+    });
+
+    document.getElementById('reciclavelButton').addEventListener('click', function() {
+      enviarComando(2); // Envia "2" para indicar "Reciclável"
+    });
+  </script>
+
+</body>
+</html>
