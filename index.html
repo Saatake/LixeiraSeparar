@@ -3,18 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Controle do Servo</title>
-  <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js"></script>
+  <title>Lixeira Separar</title>
 </head>
 <body>
-  <h1>Controle do Servo</h1>
+  <h1>Controle da Lixeira</h1>
   <button onclick="enviarComando('reciclavel')">Reciclável</button>
   <button onclick="enviarComando('organico')">Orgânico</button>
 
+  <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-database.js"></script>
+
   <script>
     // Configuração do Firebase
-   const firebaseConfig = {
+    const firebaseConfig = {
   apiKey: "AIzaSyCFOh6xEHlS_yuC9Rp3u8hdaUmZrn-uPPA",
   authDomain: "upx2-99a8e.firebaseapp.com",
   databaseURL: "https://upx2-99a8e-default-rtdb.firebaseio.com",
@@ -26,13 +27,19 @@
 
     // Inicializar Firebase
     const app = firebase.initializeApp(firebaseConfig);
-    const database = firebase.database(app);
+    const database = firebase.database();
 
-    // Função para enviar o comando
+    // Função para enviar comandos
     function enviarComando(comando) {
-      firebase.database().ref("comando").set(comando)
-        .then(() => alert(`Comando enviado: ${comando}`))
-        .catch(err => console.error("Erro ao enviar comando:", err));
+      database.ref("/").update({
+        comando: comando
+      })
+      .then(() => {
+        console.log("Comando enviado: " + comando);
+      })
+      .catch((error) => {
+        console.error("Erro ao enviar comando: ", error);
+      });
     }
   </script>
 </body>
