@@ -36,7 +36,8 @@
 
     // Função para enviar comando para o ThingSpeak
     function enviarComando(comando) {
-      const url = http://api.thingspeak.com/update?api_key=${apiKey}&field1=${comando};
+      const url = `http://api.thingspeak.com/update?api_key=${apiKey}&field1=${comando}`;
+
 
       fetch(url)
         .then(response => response.text())
