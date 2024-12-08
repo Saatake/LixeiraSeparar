@@ -7,8 +7,11 @@
 </head>
 <body>
   <h1>Controle da Lixeira</h1>
-  <button onclick="enviarComando('reciclavel')">Reciclável</button>
-  <button onclick="enviarComando('organico')">Orgânico</button>
+  <button onclick="jogarLixo('reciclavel')">Reciclável</button>
+  <button onclick="jogarLixo('organico')">Orgânico</button>
+
+  <h2>Seus pontos: <span id="pontos">0</span></h2>
+  <button onclick="irParaLoja()">Ir para a loja</button>
 
   <!-- SDK Firebase Compatível -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -17,30 +20,61 @@
   <script>
     // Configuração do Firebase
     const firebaseConfig = {
-  apiKey: "AIzaSyCFOh6xEHlS_yuC9Rp3u8hdaUmZrn-uPPA",
-  authDomain: "upx2-99a8e.firebaseapp.com",
-  databaseURL: "https://upx2-99a8e-default-rtdb.firebaseio.com",
-  projectId: "upx2-99a8e",
-  storageBucket: "upx2-99a8e.firebasestorage.app",
-  messagingSenderId: "441113316559",
-  appId: "1:441113316559:web:c26cf7fccac53abb40bbba"
-};
+      apiKey: "AIzaSyCFOh6xEHlS_yuC9Rp3u8hdaUmZrn-uPPA",
+      authDomain: "upx2-99a8e.firebaseapp.com",
+      databaseURL: "https://upx2-99a8e-default-rtdb.firebaseio.com",
+      projectId: "upx2-99a8e",
+      storageBucket: "upx2-99a8e.firebasestorage.app",
+      messagingSenderId: "441113316559",
+      appId: "1:441113316559:web:c26cf7fccac53abb40bbba"
+    };
 
     // Inicializar Firebase
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    // Função para enviar comandos
-    function enviarComando(comando) {
-      database.ref("/").update({
-        comando: comando
+    // Função para atualizar a quantidade de pontos no Firebase
+    function atualizarPontos(pontos) {
+      database.ref('usuario').update({
+        pontos: pontos
       })
       .then(() => {
-        console.log("Comando enviado: " + comando);
+        console.log("Pontos atualizados: " + pontos);
+        document.getElementById('pontos').innerText = pontos;
       })
       .catch((error) => {
-        console.error("Erro ao enviar comando: ", error);
+        console.error("Erro ao atualizar pontos: ", error);
       });
+    }
+
+    // Função para recuperar os pontos do Firebase
+    function recuperarPontos() {
+      database.ref('usuario/pontos').once('value').then((snapshot) => {
+        const pontos = snapshot.val();
+        document.getElementById('pontos').innerText = pontos;
+      });
+    }
+
+    // Função para realizar a ação de jogar lixo e atualizar pontos
+    function jogarLixo(tipo) {
+      recuperarPontos();
+
+      // Após a ação, adicionar pontos
+      database.ref('usuario/pontos').once('value').then((snapshot) => {
+        let pontos = snapshot.val() || 0;
+        pontos += 10; // Adiciona 10 pontos a cada ação
+        atualizarPontos(pontos);
+      });
+    }
+
+    // Função para redirecionar para a loja
+    function irParaLoja() {
+      window.location.href = "loja.html"; // Redireciona para a página da loja
+    }
+
+    // Carregar os pontos ao carregar a página
+    window.onload = function() {
+      recuperarPontos();
     }
   </script>
 </body>
