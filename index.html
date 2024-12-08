@@ -3,91 +3,57 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lixeira Separar</title>
+  <title>Controle da Lixeira</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      text-align: center;
       margin: 20px;
     }
-    h1 {
-      margin-bottom: 20px;
-    }
     button {
-      font-size: 18px;
-      padding: 15px 30px;
       margin: 10px;
-      border: none;
-      border-radius: 8px;
+      padding: 15px 25px;
+      font-size: 18px;
       cursor: pointer;
     }
-    #reciclavel {
-      background-color: #4CAF50;
-      color: white;
-    }
-    #organico {
-      background-color: #f39c12;
-      color: white;
-    }
-    #pontos {
-      font-size: 22px;
-      margin-top: 20px;
-      color: #333;
-    }
-    .loja {
-      margin-top: 50px;
-      text-align: left;
-      max-width: 600px;
-      margin: 50px auto;
-    }
     .item {
-      border: 1px solid #ddd;
-      padding: 15px;
-      border-radius: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
+      margin-top: 20px;
+      text-align: center;
     }
     .item img {
-      max-width: 80px;
-      max-height: 80px;
-      border-radius: 8px;
+      width: 100px;
+      height: 100px;
     }
     .item button {
-      background-color: #3498db;
-      color: white;
-      font-size: 16px;
-      padding: 10px 20px;
+      margin-top: 10px;
+    }
+    #pontos {
+      font-size: 24px;
+      margin-bottom: 20px;
     }
   </style>
 </head>
 <body>
   <h1>Controle da Lixeira</h1>
-  <button id="reciclavel" onclick="enviarComando('reciclavel')">Reciclável</button>
-  <button id="organico" onclick="enviarComando('organico')">Orgânico</button>
+  <div id="pontos">Carregando pontos...</div>
+  <button onclick="enviarComando('reciclavel')">Reciclável</button>
+  <button onclick="enviarComando('organico')">Orgânico</button>
 
-  <p id="pontos">Você tem: <span id="pontos-valor">0</span> pontos</p>
-
-  <div class="loja">
-    <h2>Loja de Pontos</h2>
+  <div id="loja">
+    <h2>Lojinha de Prêmios</h2>
     <div class="item">
       <img src="item1.jpg" alt="Item 1">
-      <div>
-        <p>Item 1</p>
-        <button onclick="comprarItem(10)">Comprar por 10 pontos</button>
-      </div>
+      <button onclick="comprarItem(30)">Comprar por 30 pontos</button>
     </div>
     <div class="item">
       <img src="item2.jpg" alt="Item 2">
-      <div>
-        <p>Item 2</p>
-        <button onclick="comprarItem(20)">Comprar por 20 pontos</button>
-      </div>
+      <button onclick="comprarItem(80)">Comprar por 80 pontos</button>
+    </div>
+    <div class="item">
+      <img src="item3.jpg" alt="Item 3">
+      <button onclick="comprarItem(120)">Comprar por 120 pontos</button>
     </div>
   </div>
 
-  <!-- SDK Firebase Compatível -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -107,53 +73,50 @@
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    // Variável para armazenar pontos
-    let pontos = 0;
+    let pontos = 0; // Variável para armazenar os pontos
 
-    // Atualizar pontos na tela
-    function atualizarPontos(valor) {
-      pontos = valor;
-      document.getElementById("pontos-valor").innerText = pontos;
-    }
-
-    // Ler pontos do Firebase
-    function lerPontos() {
-      database.ref("/pontos").on("value", (snapshot) => {
-        const valor = snapshot.val() || 0;
-        atualizarPontos(valor);
+    // Função para carregar pontos
+    function carregarPontos() {
+      database.ref("/usuario").on("value", (snapshot) => {
+        if (snapshot.exists()) {
+          pontos = snapshot.val().pontos;
+          document.getElementById("pontos").innerText = `Você tem ${pontos} pontos`;
+        }
       });
     }
 
-    // Enviar comandos
+    // Função para comprar item
+    function comprarItem(custo) {
+      if (pontos >= custo) {
+        pontos -= custo; // Subtrai os pontos localmente
+        database.ref("/usuario").update({ pontos }) // Atualiza no Firebase
+          .then(() => {
+            alert(`Compra realizada! Você agora tem ${pontos} pontos.`);
+            document.getElementById("pontos").innerText = `Você tem ${pontos} pontos`;
+          })
+          .catch((error) => {
+            console.error("Erro ao atualizar pontos no Firebase:", error);
+          });
+      } else {
+        alert("Pontos insuficientes para esta compra.");
+      }
+    }
+
+    // Função para enviar comandos
     function enviarComando(comando) {
       database.ref("/").update({
         comando: comando
       })
-      .then(() => console.log("Comando enviado: " + comando))
-      .catch((error) => console.error("Erro ao enviar comando: ", error));
+      .then(() => {
+        console.log("Comando enviado: " + comando);
+      })
+      .catch((error) => {
+        console.error("Erro ao enviar comando: ", error);
+      });
     }
 
-    // Comprar item
-    function comprarItem(preco) {
-      if (pontos >= preco) {
-        const novosPontos = pontos - preco;
-        database.ref("/").update({ pontos: novosPontos })
-          .then(() => alert("Compra realizada com sucesso!"))
-          .catch((error) => console.error("Erro ao atualizar pontos: ", error));
-      } else {
-        alert("Pontos insuficientes para realizar a compra.");
-      }
-    }
-
-    // Resetar pontos ao digitar "zeropontos" no Serial
-    function resetarPontos() {
-      database.ref("/").update({ pontos: 0 })
-        .then(() => console.log("Pontos zerados"))
-        .catch((error) => console.error("Erro ao resetar pontos: ", error));
-    }
-
-    // Inicializar leitura de pontos
-    lerPontos();
+    // Carregar os pontos na inicialização
+    carregarPontos();
   </script>
 </body>
 </html>
