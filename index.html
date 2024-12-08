@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Controle Servo Motor</title>
+  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -25,39 +27,38 @@
   </style>
 </head>
 <body>
-
   <h1>Controle Servo Motor</h1>
   <button id="organicoButton">Orgânico</button>
   <button id="reciclavelButton">Reciclável</button>
 
   <script>
-    const channelID = ""2778676";
-    const apiKey = "141F5A2KJG7LR9OI"; 
+    const firebaseConfig = {
+  apiKey: "AIzaSyCFOh6xEHlS_yuC9Rp3u8hdaUmZrn-uPPA",
+  authDomain: "upx2-99a8e.firebaseapp.com",
+  databaseURL: "https://upx2-99a8e-default-rtdb.firebaseio.com",
+  projectId: "upx2-99a8e",
+  storageBucket: "upx2-99a8e.firebasestorage.app",
+  messagingSenderId: "441113316559",
+  appId: "1:441113316559:web:c26cf7fccac53abb40bbba"
+};
 
-    // Função para enviar comando para o ThingSpeak
+    // Inicializa o Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    // Função para enviar comando para o Firebase
     function enviarComando(comando) {
-      const url = `http://api.thingspeak.com/update?api_key=${apiKey}&field1=${comando}`;
-
-
-      fetch(url)
-        .then(response => response.text())
-        .then(data => {
-          console.log('Comando enviado:', data);
-        })
-        .catch(error => {
-          console.error('Erro:', error);
-        });
+      database.ref("comandos/servo").set({
+        tipo: comando,
+        timestamp: Date.now()
+      })
+      .then(() => console.log("Comando enviado:", comando))
+      .catch(error => console.error("Erro ao enviar comando:", error));
     }
 
-    // Configuração dos botões para enviar comandos
-    document.getElementById('organicoButton').addEventListener('click', function() {
-      enviarComando(1); // Envia "1" para indicar "Orgânico"
-    });
-
-    document.getElementById('reciclavelButton').addEventListener('click', function() {
-      enviarComando(2); // Envia "2" para indicar "Reciclável"
-    });
+    // Eventos dos botões
+    document.getElementById("organicoButton").addEventListener("click", () => enviarComando("1"));
+    document.getElementById("reciclavelButton").addEventListener("click", () => enviarComando("2"));
   </script>
-
 </body>
 </html>
