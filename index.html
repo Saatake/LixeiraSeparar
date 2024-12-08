@@ -1,37 +1,39 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle do Servo Motor</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
-        }
-        button {
-            background-color: #4CAF50; /* Green */
-            border: none;
-            color: white;
-            padding: 15px 32px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 12px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Controle do Servo</title>
+  <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js"></script>
 </head>
 <body>
-    <h1>Controle do Servo Motor</h1>
-    <a href="http://192.168.1.18/move/0"><button>Movimentar para 0 graus</button></a><br>
-    <a href="http://192.168.1.18/move/90"><button>Movimentar para 90 graus</button></a><br>
-    <a href="http://192.168.1.18/move/180"><button>Movimentar para 180 graus</button></a><br>
+  <h1>Controle do Servo</h1>
+  <button onclick="enviarComando('reciclavel')">Reciclável</button>
+  <button onclick="enviarComando('organico')">Orgânico</button>
+
+  <script>
+    // Configuração do Firebase
+   const firebaseConfig = {
+  apiKey: "AIzaSyCFOh6xEHlS_yuC9Rp3u8hdaUmZrn-uPPA",
+  authDomain: "upx2-99a8e.firebaseapp.com",
+  databaseURL: "https://upx2-99a8e-default-rtdb.firebaseio.com",
+  projectId: "upx2-99a8e",
+  storageBucket: "upx2-99a8e.firebasestorage.app",
+  messagingSenderId: "441113316559",
+  appId: "1:441113316559:web:c26cf7fccac53abb40bbba"
+};
+
+    // Inicializar Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database(app);
+
+    // Função para enviar o comando
+    function enviarComando(comando) {
+      firebase.database().ref("comando").set(comando)
+        .then(() => alert(`Comando enviado: ${comando}`))
+        .catch(err => console.error("Erro ao enviar comando:", err));
+    }
+  </script>
 </body>
 </html>
