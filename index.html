@@ -67,66 +67,64 @@
 
     // Função para enviar comandos para o ESP32
     function enviarComando(comando) {
-      // Atualiza o Firebase com o comando
-      database.ref("/comando").set(comando).then(() => {
-        console.log("Comando enviado: " + comando);
-        alert("Botão " + comando.charAt(0).toUpperCase() + comando.slice(1) + " selecionado com sucesso!");
+      // Verifica o status do comando antes de enviar
+      database.ref("/status_comando").once('value').then((snapshot) => {
+        const statusComando = snapshot.val();
+
+        if (!statusComando) {  // Verifica se o comando não foi processado
+          // Atualiza o Firebase com o comando
+          database.ref("/comando").set(comando).then(() => {
+            console.log("Comando enviado: " + comando);
+            alert("Botão " + comando.charAt(0).toUpperCase() + comando.slice(1) + " selecionado com sucesso!");
+
+            // Atualiza o status do comando para "processado"
+            database.ref("/status_comando").set(true);
+          }).catch((error) => {
+            console.error("Erro ao enviar comando: ", error);
+          });
+        } else {
+          console.log("Comando não processado, aguarde.");
+        }
       }).catch((error) => {
-        console.error("Erro ao enviar comando: ", error);
+        console.error("Erro ao verificar status do comando: ", error);
       });
     }
 
-// Função para carregar os pontos do Firebase e atualizar a interface
-function carregarPontos() {
-  const pontosRef = database.ref('pontos'); // Caminho correto para "pontos"
-  pontosRef.once('value').then((snapshot) => {
-    const pontos = snapshot.val();
-    if (pontos !== null) {
-      document.getElementById('pontos').innerText = "Pontos: " + pontos;
-    } else {
-      console.log("Pontos não encontrados no Firebase.");
-    }
-  }).catch((error) => {
-    console.error("Erro ao carregar pontos: ", error);
-  });
-}
-
-// Escutar as mudanças nos pontos em tempo real
-const pontosRef = database.ref('pontos');
-pontosRef.on('value', (snapshot) => {
-  const pontos = snapshot.val();
-  if (pontos !== null) {
-    document.getElementById('pontos').innerText = "Pontos: " + pontos;
-  }
-});
-
-// Função para comprar itens e subtrair pontos
-function comprarItem(pontosNecessarios) {
-  const pontosRef = database.ref('pontos'); // Referência direta aos pontos no Firebase
-  pontosRef.once('value').then((snapshot) => {
-    const pontosAtuais = snapshot.val() || 0;
-    
-    if (pontosAtuais >= pontosNecessarios) {
-      const novosPontos = pontosAtuais - pontosNecessarios;
-      // Atualizar pontos no Firebase
-      pontosRef.set(novosPontos).then(() => {
-        console.log("Pontos atualizados no Firebase.");
-        alert("Compra realizada com sucesso!");
+    // Função para carregar os pontos do Firebase e atualizar a interface
+    function carregarPontos() {
+      const pontosRef = database.ref('pontos'); // Caminho correto para "pontos"
+      pontosRef.once('value').then((snapshot) => {
+        const pontos = snapshot.val();
+        if (pontos !== null) {
+          document.getElementById('pontos').innerText = "Pontos: " + pontos;
+        } else {
+          console.log("Pontos não encontrados no Firebase.");
+        }
       }).catch((error) => {
-        console.error("Erro ao atualizar pontos no Firebase: ", error);
+        console.error("Erro ao carregar pontos: ", error);
       });
-    } else {
-      alert("Você não tem pontos suficientes para comprar este item.");
     }
-  }).catch((error) => {
-    console.error("Erro ao carregar pontos: ", error);
-  });
-}
 
-    // Chama a função para carregar os pontos assim que a página for carregada
-    window.onload = function() {
-      carregarPontos();
-    };
-  </script>
-</body>
-</html>
+    // Escutar as mudanças nos pontos em tempo real
+    const pontosRef = database.ref('pontos');
+    pontosRef.on('value', (snapshot) => {
+      const pontos = snapshot.val();
+      if (pontos !== null) {
+        document.getElementById('pontos').innerText = "Pontos: " + pontos;
+      }
+    });
+
+    // Função para comprar itens e subtrair pontos
+    function comprarItem(pontosNecessarios) {
+      const pontosRef = database.ref('pontos'); // Referência direta aos pontos no Firebase
+      pontosRef.once('value').then((snapshot) => {
+        const pontosAtuais = snapshot.val() || 0;
+        
+        if (pontosAtuais >= pontosNecessarios) {
+          const novosPontos = pontosAtuais - pontosNecessarios;
+          // Atualizar pontos no Firebase
+          pontosRef.set(novosPontos).then(() => {
+            console.log("Pontos atualizados no Firebase.");
+            alert("Compra realizada com sucesso!");
+          }).catch((error) => {
+            console.error("Erro ao atualizar
