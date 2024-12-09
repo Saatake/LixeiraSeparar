@@ -22,19 +22,21 @@
 
   <h2>Loja de Pontos</h2>
   <div class="itens">
-    <!-- Itens da loja -->
+    <!-- Item 1 -->
     <div class="item">
       <img src="Assets/snickers.png" alt="Item 1" class="item-imagem">
       <h3>Chocolate Snickers</h3>
       <p class="descricao">Delicioso chocolate com amendoins, caramelo e chocolate ao leite.</p>
       <button class="comprar-botao" onclick="comprarItem(30)">Comprar por 30 pontos</button>
     </div>
+    <!-- Item 2 -->
     <div class="item">
       <img src="Assets/facens.jpg" alt="Item 2" class="item-imagem">
       <h3>Horas Complementares</h3>
       <p class="descricao">Uma aula de reforço da matéria escolhida.</p>
       <button class="comprar-botao" onclick="comprarItem(80)">Comprar por 80 pontos</button>
     </div>
+    <!-- Item 3 -->
     <div class="item">
       <img src="Assets/facens.jpg" alt="Item 3" class="item-imagem">
       <h3>Produto 3</h3>
@@ -65,77 +67,61 @@
 
     // Função para enviar comandos para o ESP32
     function enviarComando(comando) {
-      // Verifica o status_comando no Firebase
-      const statusComandoRef = database.ref("/status_comando");
-      statusComandoRef.once('value').then((snapshot) => {
-        const statusComando = snapshot.val();
-
-        // Se o status_comando for false, envia o comando e atualiza o status
-        if (statusComando === false) {
-          // Atualiza o Firebase com o comando
-          database.ref("/comando").set(comando).then(() => {
-            console.log("Comando enviado: " + comando);
-            alert("Botão " + comando.charAt(0).toUpperCase() + comando.slice(1) + " selecionado com sucesso!");
-
-            // Atualiza o status_comando para true para bloquear o envio do mesmo comando
-            statusComandoRef.set(true);
-          }).catch((error) => {
-            console.error("Erro ao enviar comando: ", error);
-          });
-        } else {
-          console.log("Comando já enviado, aguardando o ESP32 processar.");
-        }
+      // Atualiza o Firebase com o comando
+      database.ref("/comando").set(comando).then(() => {
+        console.log("Comando enviado: " + comando);
+        alert("Botão " + comando.charAt(0).toUpperCase() + comando.slice(1) + " selecionado com sucesso!");
       }).catch((error) => {
-        console.error("Erro ao verificar o status_comando: ", error);
+        console.error("Erro ao enviar comando: ", error);
       });
     }
 
-    // Função para carregar os pontos do Firebase e atualizar a interface
-    function carregarPontos() {
-      const pontosRef = database.ref('pontos'); // Caminho correto para "pontos"
-      pontosRef.once('value').then((snapshot) => {
-        const pontos = snapshot.val();
-        if (pontos !== null) {
-          document.getElementById('pontos').innerText = "Pontos: " + pontos;
-        } else {
-          console.log("Pontos não encontrados no Firebase.");
-        }
-      }).catch((error) => {
-        console.error("Erro ao carregar pontos: ", error);
-      });
+// Função para carregar os pontos do Firebase e atualizar a interface
+function carregarPontos() {
+  const pontosRef = database.ref('pontos'); // Caminho correto para "pontos"
+  pontosRef.once('value').then((snapshot) => {
+    const pontos = snapshot.val();
+    if (pontos !== null) {
+      document.getElementById('pontos').innerText = "Pontos: " + pontos;
+    } else {
+      console.log("Pontos não encontrados no Firebase.");
     }
+  }).catch((error) => {
+    console.error("Erro ao carregar pontos: ", error);
+  });
+}
 
-    // Escutar as mudanças nos pontos em tempo real
-    const pontosRef = database.ref('pontos');
-    pontosRef.on('value', (snapshot) => {
-      const pontos = snapshot.val();
-      if (pontos !== null) {
-        document.getElementById('pontos').innerText = "Pontos: " + pontos;
-      }
-    });
+// Escutar as mudanças nos pontos em tempo real
+const pontosRef = database.ref('pontos');
+pontosRef.on('value', (snapshot) => {
+  const pontos = snapshot.val();
+  if (pontos !== null) {
+    document.getElementById('pontos').innerText = "Pontos: " + pontos;
+  }
+});
 
-    // Função para comprar itens e subtrair pontos
-    function comprarItem(pontosNecessarios) {
-      const pontosRef = database.ref('pontos'); // Referência direta aos pontos no Firebase
-      pontosRef.once('value').then((snapshot) => {
-        const pontosAtuais = snapshot.val() || 0;
-
-        if (pontosAtuais >= pontosNecessarios) {
-          const novosPontos = pontosAtuais - pontosNecessarios;
-          // Atualizar pontos no Firebase
-          pontosRef.set(novosPontos).then(() => {
-            console.log("Pontos atualizados no Firebase.");
-            alert("Compra realizada com sucesso!");
-          }).catch((error) => {
-            console.error("Erro ao atualizar pontos no Firebase: ", error);
-          });
-        } else {
-          alert("Você não tem pontos suficientes para comprar este item.");
-        }
+// Função para comprar itens e subtrair pontos
+function comprarItem(pontosNecessarios) {
+  const pontosRef = database.ref('pontos'); // Referência direta aos pontos no Firebase
+  pontosRef.once('value').then((snapshot) => {
+    const pontosAtuais = snapshot.val() || 0;
+    
+    if (pontosAtuais >= pontosNecessarios) {
+      const novosPontos = pontosAtuais - pontosNecessarios;
+      // Atualizar pontos no Firebase
+      pontosRef.set(novosPontos).then(() => {
+        console.log("Pontos atualizados no Firebase.");
+        alert("Compra realizada com sucesso!");
       }).catch((error) => {
-        console.error("Erro ao carregar pontos: ", error);
+        console.error("Erro ao atualizar pontos no Firebase: ", error);
       });
+    } else {
+      alert("Você não tem pontos suficientes para comprar este item.");
     }
+  }).catch((error) => {
+    console.error("Erro ao carregar pontos: ", error);
+  });
+}
 
     // Chama a função para carregar os pontos assim que a página for carregada
     window.onload = function() {
