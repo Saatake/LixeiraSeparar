@@ -3,57 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Controle da Lixeira</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-    button {
-      margin: 10px;
-      padding: 15px 25px;
-      font-size: 18px;
-      cursor: pointer;
-    }
-    .item {
-      margin-top: 20px;
-      text-align: center;
-    }
-    .item img {
-      width: 100px;
-      height: 100px;
-    }
-    .item button {
-      margin-top: 10px;
-    }
-    #pontos {
-      font-size: 24px;
-      margin-bottom: 20px;
-    }
-  </style>
+  <title>Lixeira Separar</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>Controle da Lixeira</h1>
-  <div id="pontos">Carregando pontos...</div>
-  <button onclick="enviarComando('reciclavel')">Reciclável</button>
-  <button onclick="enviarComando('organico')">Orgânico</button>
+  <div id="pontos">Pontos: 0</div>
+  <h1>Lixeira Separadora</h1>
 
-  <div id="loja">
-    <h2>Lojinha de Prêmios</h2>
+  <!-- Botões Orgânico e Reciclável -->
+  <div class="botao-container">
+    <button class="botao-lixeira" id="organico" onclick="enviarComando('organico')">
+      <img src="Assets/organico.png" alt="Orgânico">
+    </button>
+    <button class="botao-lixeira" id="reciclavel" onclick="enviarComando('reciclavel')">
+      <img src="Assets/reciclavel.png" alt="Reciclável">
+    </button>
+  </div>
+
+  <h2>Loja de Pontos</h2>
+  <div class="itens">
+    <!-- Item 1 -->
     <div class="item">
-      <img src="item1.jpg" alt="Item 1">
-      <button onclick="comprarItem(30)">Comprar por 30 pontos</button>
+      <img src="Assets/snickers.png" alt="Item 1" class="item-imagem">
+      <h3>Chocolate Snickers</h3>
+      <p class="descricao">Delicioso chocolate com amendoins, caramelo e chocolate ao leite.</p>
+      <button class="comprar-botao" onclick="comprarItem(30)">Comprar por 30 pontos</button>
     </div>
+    <!-- Item 2 -->
     <div class="item">
-      <img src="item2.jpg" alt="Item 2">
-      <button onclick="comprarItem(80)">Comprar por 80 pontos</button>
+      <img src="Assets/facens.jpg" alt="Item 2" class="item-imagem">
+      <h3>Horas Complementares</h3>
+      <p class="descricao">Uma aula de reforço da matéria escolhida.</p>
+      <button class="comprar-botao" onclick="comprarItem(80)">Comprar por 80 pontos</button>
     </div>
+    <!-- Item 3 -->
     <div class="item">
-      <img src="item3.jpg" alt="Item 3">
-      <button onclick="comprarItem(120)">Comprar por 120 pontos</button>
+      <img src="Assets/facens.jpg" alt="Item 3" class="item-imagem">
+      <h3>Produto 3</h3>
+      <p class="descricao">Duas horas complementares nos cursos de engenharia, saúde e tecnologia.</p>
+      <button class="comprar-botao" onclick="comprarItem(120)">Comprar por 120 pontos</button>
     </div>
   </div>
 
+  <!-- SDK Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -73,50 +65,36 @@
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    let pontos = 0; // Variável para armazenar os pontos
-
-    // Função para carregar pontos
-    function carregarPontos() {
-      database.ref("/usuario").on("value", (snapshot) => {
-        if (snapshot.exists()) {
-          pontos = snapshot.val().pontos;
-          document.getElementById("pontos").innerText = `Você tem ${pontos} pontos`;
-        }
-      });
-    }
-
-    // Função para comprar item
-    function comprarItem(custo) {
-      if (pontos >= custo) {
-        pontos -= custo; // Subtrai os pontos localmente
-        database.ref("/usuario").update({ pontos }) // Atualiza no Firebase
-          .then(() => {
-            alert(`Compra realizada! Você agora tem ${pontos} pontos.`);
-            document.getElementById("pontos").innerText = `Você tem ${pontos} pontos`;
-          })
-          .catch((error) => {
-            console.error("Erro ao atualizar pontos no Firebase:", error);
-          });
-      } else {
-        alert("Pontos insuficientes para esta compra.");
-      }
-    }
-
-    // Função para enviar comandos
+    // Função para enviar comandos para o ESP32
     function enviarComando(comando) {
       database.ref("/").update({
         comando: comando
-      })
-      .then(() => {
+      }).then(() => {
         console.log("Comando enviado: " + comando);
-      })
-      .catch((error) => {
+      }).catch((error) => {
         console.error("Erro ao enviar comando: ", error);
       });
     }
 
-    // Carregar os pontos na inicialização
-    carregarPontos();
+    // Função para comprar itens e subtrair pontos
+    function comprarItem(pontosNecessarios) {
+      const pontosAtuais = parseInt(document.getElementById("pontos").innerText.replace("Pontos: ", ""));
+      
+      if (pontosAtuais >= pontosNecessarios) {
+        const novosPontos = pontosAtuais - pontosNecessarios;
+        document.getElementById("pontos").innerText = "Pontos: " + novosPontos;
+        // Atualizar Firebase com os pontos restantes
+        database.ref('/usuario_123').update({
+          pontos: novosPontos
+        }).then(() => {
+          console.log("Pontos atualizados no Firebase.");
+        }).catch((error) => {
+          console.error("Erro ao atualizar pontos no Firebase: ", error);
+        });
+      } else {
+        alert("Você não tem pontos suficientes para comprar este item.");
+      }
+    }
   </script>
 </body>
 </html>
