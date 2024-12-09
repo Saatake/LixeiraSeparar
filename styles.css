@@ -1,0 +1,194 @@
+/* Resetando o estilo básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-image: url('Assets/background.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+    position: relative; /* Necessário para o ::before funcionar */
+    z-index: 0; /* Certifique-se de que o conteúdo está acima */
+}
+
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.5); /* Branco com opacidade de 50% */
+    z-index: -1; /* Camada atrás do conteúdo */
+}
+
+h1 {
+    font-family: 'Arial', sans-serif;
+    font-size: 40px;
+    font-weight: bold;
+    color: #4CAF50;  /* Cor vibrante, por exemplo, verde */
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3); /* Sombra suave */
+    letter-spacing: 2px; /* Espaçamento entre as letras */
+    text-align: center;
+    margin-top: 50px;
+    animation: fadeIn 1s ease-out;  /* Animação de fade-in */
+}
+
+/* Animação de fade-in */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+#pontos {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;  /* Cor do texto */
+    padding: 8px 20px;
+    border-radius: 15px;  /* Bordas arredondadas */
+    border: 2px solid #333;  /* Adiciona uma borda ao redor */
+    background-color: transparent;  /* Sem fundo */
+    text-align: center; /* Centraliza o texto */
+    width: auto; /* Ajusta o tamanho conforme o texto */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Estilo dos botões da lixeira */
+.botao-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px; /* Espaço entre os botões */
+    width: 100%;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+.botao-lixeira {
+    width: 150px;
+    height: 250px; /* Aumenta o tamanho dos botões */
+    background-color: transparent; /* Remover fundo colorido */
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.botao-lixeira img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Faz com que a imagem ocupe todo o botão */
+    border-radius: 15px; /* Arredonda as bordas */
+}
+
+/* Botão Orgânico */
+#organico {
+    background-color: rgba(144, 238, 144, 0.4); /* Verde claro com opacidade */
+}
+
+#organico:hover {
+    background-color: rgba(144, 238, 144, 0.6); /* Cor mais intensa ao passar o mouse */
+}
+
+/* Botão Reciclável */
+#reciclavel {
+    background-color: rgba(255, 255, 204, 0.4); /* Amarelo claro com opacidade */
+}
+
+#reciclavel:hover {
+    background-color: rgba(255, 255, 204, 0.6); /* Cor mais intensa ao passar o mouse */
+}
+
+.botao-lixeira:hover {
+    transform: scale(1.1);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2); /* Sombra ao passar o mouse */
+}
+
+.botao-lixeira:active {
+    transform: scale(0.95);
+}
+
+/* Estilo da loja de itens */
+.itens {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 30px;
+}
+
+.item {
+    text-align: center;
+    margin: 20px 0;
+    width: 250px; /* Aumenta o tamanho dos cards */
+    background-color: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    opacity: 0.8; /* Adicionando opacidade baixa no card */
+}
+
+.item:hover {
+    transform: scale(1.05);
+}
+
+.item-imagem {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    object-fit: contain;
+    margin-bottom: 20px;
+}
+
+/* Adicionando a descrição centralizada */
+.descricao-item {
+    font-size: 14px; /* Ajuste o tamanho da fonte conforme necessário */
+    color: #333; /* Cor da descrição */
+    margin-bottom: 20px; /* Espaçamento entre a descrição e o botão */
+    text-align: center;
+}
+
+.comprar-botao {
+    background-color: rgba(255, 152, 0, 0.8); /* Botão semi-transparente */
+    color: white;
+    padding: 10px 20px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.comprar-botao:hover {
+    background-color: rgba(230, 137, 0, 0.9);
+    transform: translateY(-5px); /* Animação de deslocamento do botão */
+}
+
+.comprar-botao:active {
+    background-color: rgba(216, 122, 0, 0.9);
+    transform: translateY(0);
+}
