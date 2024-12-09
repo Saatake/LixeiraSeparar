@@ -24,7 +24,7 @@
   <div class="itens">
     <!-- Item 1 -->
     <div class="item">
-      <img src="Assets/snickers.png" alt="Item 1" class="item-imagem">
+      <img src="Assets/Snickers.png" alt="Item 1" class="item-imagem">
       <h3>Chocolate Snickers</h3>
       <p class="descricao">Delicioso chocolate com amendoins, caramelo e chocolate ao leite.</p>
       <button class="comprar-botao" onclick="comprarItem(30)">Comprar por 30 pontos</button>
@@ -96,12 +96,13 @@
       }
     }
 
-    // Função para pegar os pontos do Firebase e atualizar a interface
+        // Função para pegar os pontos do Firebase e atualizar a interface
     function carregarPontos() {
-      const usuarioRef = database.ref('/usuario_123/pontos');
-      usuarioRef.once('value').then((snapshot) => {
+      const pontosRef = database.ref('/pontos'); // Caminho correto para "pontos"
+      pontosRef.once('value').then((snapshot) => {
         const pontos = snapshot.val();
         if (pontos !== null) {
+          // Atualizar a interface com os pontos do Firebase
           document.getElementById('pontos').innerText = "Pontos: " + pontos;
         } else {
           console.log("Pontos não encontrados no Firebase.");
@@ -110,6 +111,12 @@
         console.error("Erro ao carregar pontos: ", error);
       });
     }
+
+    // Chama a função para carregar os pontos assim que a página for carregada
+    window.onload = function() {
+      carregarPontos();
+    };
+
 
     // Chama a função para carregar os pontos assim que a página for carregada
     window.onload = function() {
