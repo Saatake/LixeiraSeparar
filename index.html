@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lixeira Separar</title>
+  <title>Lixeira Separadora</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -95,6 +95,26 @@
         alert("Você não tem pontos suficientes para comprar este item.");
       }
     }
+
+    // Função para pegar os pontos do Firebase e atualizar a interface
+    function carregarPontos() {
+      const usuarioRef = database.ref('/usuario_123/pontos');
+      usuarioRef.once('value').then((snapshot) => {
+        const pontos = snapshot.val();
+        if (pontos !== null) {
+          document.getElementById('pontos').innerText = "Pontos: " + pontos;
+        } else {
+          console.log("Pontos não encontrados no Firebase.");
+        }
+      }).catch((error) => {
+        console.error("Erro ao carregar pontos: ", error);
+      });
+    }
+
+    // Chama a função para carregar os pontos assim que a página for carregada
+    window.onload = function() {
+      carregarPontos();
+    };
   </script>
 </body>
 </html>
