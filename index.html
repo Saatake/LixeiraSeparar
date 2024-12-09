@@ -67,10 +67,10 @@
 
     // Função para enviar comandos para o ESP32
     function enviarComando(comando) {
-      database.ref("/").update({
-        comando: comando
-      }).then(() => {
+      // Atualiza o Firebase com o comando
+      database.ref("/comando").set(comando).then(() => {
         console.log("Comando enviado: " + comando);
+        alert("Botão " + comando.charAt(0).toUpperCase() + comando.slice(1) + " selecionado com sucesso!");
       }).catch((error) => {
         console.error("Erro ao enviar comando: ", error);
       });
@@ -78,31 +78,35 @@
 
     // Função para comprar itens e subtrair pontos
     function comprarItem(pontosNecessarios) {
-      const pontosAtuais = parseInt(document.getElementById("pontos").innerText.replace("Pontos: ", ""));
-      
-      if (pontosAtuais >= pontosNecessarios) {
-        const novosPontos = pontosAtuais - pontosNecessarios;
-        document.getElementById("pontos").innerText = "Pontos: " + novosPontos;
-        // Atualizar Firebase com os pontos restantes
-        database.ref('/usuario_123').update({
-          pontos: novosPontos
-        }).then(() => {
-          console.log("Pontos atualizados no Firebase.");
-        }).catch((error) => {
-          console.error("Erro ao atualizar pontos no Firebase: ", error);
-        });
-      } else {
-        alert("Você não tem pontos suficientes para comprar este item.");
-      }
+      const pontosRef = database.ref('pontos'); // Referência direta aos pontos no Firebase
+      pontosRef.once('value').then((snapshot) => {
+        const pontosAtuais = snapshot.val() || 0;
+        
+        if (pontosAtuais >= pontosNecessarios) {
+          const novosPontos = pontosAtuais - pontosNecessarios;
+          document.getElementById("pontos").innerText = "Pontos: " + novosPontos;
+          
+          // Atualizar pontos no Firebase
+          pontosRef.set(novosPontos).then(() => {
+            console.log("Pontos atualizados no Firebase.");
+            alert("Compra realizada com sucesso!");
+          }).catch((error) => {
+            console.error("Erro ao atualizar pontos no Firebase: ", error);
+          });
+        } else {
+          alert("Você não tem pontos suficientes para comprar este item.");
+        }
+      }).catch((error) => {
+        console.error("Erro ao carregar pontos: ", error);
+      });
     }
 
-            // Função para pegar os pontos do Firebase e atualizar a interface
+    // Função para carregar os pontos do Firebase e atualizar a interface
     function carregarPontos() {
       const pontosRef = database.ref('pontos'); // Caminho correto para "pontos"
       pontosRef.once('value').then((snapshot) => {
         const pontos = snapshot.val();
         if (pontos !== null) {
-          // Atualizar a interface com os pontos do Firebase
           document.getElementById('pontos').innerText = "Pontos: " + pontos;
         } else {
           console.log("Pontos não encontrados no Firebase.");
@@ -111,17 +115,6 @@
         console.error("Erro ao carregar pontos: ", error);
       });
     }
-
-    // Chama a função para carregar os pontos assim que a página for carregada
-    window.onload = function() {
-      carregarPontos();
-    };
-
-    // Chama a função para carregar os pontos assim que a página for carregada
-    window.onload = function() {
-      carregarPontos();
-    };
-
 
     // Chama a função para carregar os pontos assim que a página for carregada
     window.onload = function() {
